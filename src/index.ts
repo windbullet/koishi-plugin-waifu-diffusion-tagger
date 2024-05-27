@@ -120,11 +120,15 @@ export function apply(ctx: Context, config: Config) {
 
       const res = await ctx.http.get(`https://smilingwolf-wd-tagger.hf.space/queue/data?session_hash=${hash}`)
       let data = JSON.parse(res.split("\n")[4].slice(5, res.split("\n")[4].length)).output.data
+      console.log(JSON.stringify(data,null,2))
       
-      let result =  `标签：\n${data[0]}\n\n角色：${data[2].label}`
-      for (let character of data[2].confidences) {
-        result += `\n${character.label} (${Math.trunc(character.confidence * 100)}%)`
+      let result =  `标签：\n${data[0]}\n\n角色：${data[2].label ?? "未知"}`
+      if (data[2].label) {
+        for (let character of data[2].confidences) {
+          result += `\n${character.label} (${Math.trunc(character.confidence * 100)}%)`
+        }
       }
+      
       
 
       result += `\n\n安全程度：${data[1].label}`

@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-waifu-diffusion-tagger",
   "description": "图片反推AI生成标签，nsfw程度评分及角色识别",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -9,6 +9,11 @@
     "dist"
   ],
   "license": "MIT",
+  "homepage": "https://github.com/windbullet/koishi-plugin-waifu-diffusion-tagger",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/windbullet/koishi-plugin-waifu-diffusion-tagger.git"
+  },
   "keywords": [
     "chatbot",
     "koishi",
