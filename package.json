@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-waifu-diffusion-tagger",
   "description": "图片反推AI生成标签，nsfw程度评分及角色识别",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [

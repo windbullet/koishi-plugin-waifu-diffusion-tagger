@@ -66,7 +66,7 @@ export const Config: Schema<Config> = Schema.object({
 })
 
 export function apply(ctx: Context, config: Config) {
-  ctx.command("tagger [img:image]", "图片反推AI生成标签")
+  ctx.command("tagger [img:image]", "图片反推AI生成标签，角色识别，nsfw程度判断")
     .action(async ({session}, img) => {
       let url: string
       if (img) {
