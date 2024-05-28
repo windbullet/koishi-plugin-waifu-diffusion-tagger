@@ -90,7 +90,7 @@ export function apply(ctx: Context, config: Config) {
         url = image[0].attrs.src
       }
 
-      await session.send(h.quote(session.messageId) + "正在识别，请稍等...")
+      await session.send(h.quote(session?.quote?.id ?? session.messageId) + "正在识别，请稍等...")
 
       let uploadFormData = new FormData()
       uploadFormData.append('files', await ctx.http.get(url, {responseType: 'blob'}))
@@ -136,7 +136,7 @@ export function apply(ctx: Context, config: Config) {
         result += `\n${rating.label} (${Math.trunc(rating.confidence * 100)}%)`
       }
 
-      return h.quote(session.messageId) + result
+      return h.quote(session?.quote?.id ?? session.messageId) + result
     })
 
 }
