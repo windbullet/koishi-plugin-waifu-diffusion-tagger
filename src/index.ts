@@ -67,6 +67,7 @@ export const Config: Schema<Config> = Schema.object({
 
 export function apply(ctx: Context, config: Config) {
   ctx.command("tagger [img:image]", "图片反推AI生成标签，角色识别，nsfw程度判断")
+    .usage("支持回复图片和调用后发图片")
     .action(async ({session}, img) => {
       let url: string
       if (img) {
@@ -89,7 +90,7 @@ export function apply(ctx: Context, config: Config) {
         url = image[0].attrs.src
       }
 
-      await session.send("正在识别，请稍等...")
+      await session.send(h.quote(session.messageId) + "正在识别，请稍等...")
 
       let uploadFormData = new FormData()
       uploadFormData.append('files', await ctx.http.get(url, {responseType: 'blob'}))
@@ -120,7 +121,6 @@ export function apply(ctx: Context, config: Config) {
 
       const res = await ctx.http.get(`https://smilingwolf-wd-tagger.hf.space/queue/data?session_hash=${hash}`)
       let data = JSON.parse(res.split("\n")[4].slice(5, res.split("\n")[4].length)).output.data
-      console.log(JSON.stringify(data,null,2))
       
       let result =  `标签：\n${data[0]}\n\n角色：${data[2].label ?? "未知"}`
       if (data[2].label) {
@@ -136,7 +136,7 @@ export function apply(ctx: Context, config: Config) {
         result += `\n${rating.label} (${Math.trunc(rating.confidence * 100)}%)`
       }
 
-      return result
+      return h.quote(session.messageId) + result
     })
 
 }
