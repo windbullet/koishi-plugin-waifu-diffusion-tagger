@@ -71,7 +71,7 @@ export function apply(ctx: Context, config: Config) {
     .action(async ({session}, img) => {
       let url: string
       if (img) {
-        url = img.url
+        url = img.src
       } else {
         let element = session.quote?.elements
         if (!element) {
