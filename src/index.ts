@@ -1,4 +1,4 @@
-import { Context, Schema, h  } from 'koishi'
+import { Context, Schema, h } from 'koishi'
 
 export const name = 'waifu-diffusion-tagger'
 
@@ -65,8 +65,31 @@ export const Config: Schema<Config> = Schema.object({
   
 })
 
+declare module 'koishi' {
+  interface Tables {
+    taggerData: TaggerData
+  }
+}
+
+export interface TaggerData {
+  id: number
+  userId: string
+  content: string
+}
+
+export const inject = ["database"]
+
 export function apply(ctx: Context, config: Config) {
-  ctx.command("tagger [img:image]", "图片反推AI生成标签，角色识别，nsfw程度判断")
+  ctx.model.extend('taggerData', {
+    id: 'unsigned',
+    userId: 'string',
+    content: 'text',
+  }, {primary: 'id', autoInc: true})
+
+  ctx.command("tagger", "图片反推AI生成标签，角色识别，nsfw程度判断")
+
+  ctx.command("tagger.rec [img:image]", "图片反推AI生成标签，角色识别，nsfw程度判断")
+    .alias("rec")
     .usage("支持回复图片和调用后发图片")
     .action(async ({session}, img) => {
       let url: string
@@ -129,14 +152,25 @@ export function apply(ctx: Context, config: Config) {
         }
       }
       
-      
-
       result += `\n\n安全程度：${data[1].label}`
       for (let rating of data[1].confidences) {
         result += `\n${rating.label} (${Math.trunc(rating.confidence * 100)}%)`
       }
 
-      return h.quote(session?.quote?.id ?? session.messageId) + result
+      const {id} = await ctx.database.create("taggerData", {
+        userId: session.userId,
+        content: `识别图片：${h.image(url)}\n\n` + result
+      })
+
+      return h.quote(session?.quote?.id ?? session.messageId) + result + `\n\n储存编号：${id}`
     })
+
+    ctx.command("tagger.view-results <id:posint>", "查看过往的识别结果")
+      .alias("view-results")
+      .action(async ({session}, id) => {
+        const data = await ctx.database.get("taggerData", id)
+        if (data.length === 0) return "没有找到该编号的结果"
+        return data[0].content
+      })
 
 }
