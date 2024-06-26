@@ -43,6 +43,7 @@ export interface Config {
         "SmilingWolf/wd-v1-4-vit-tagger-v2"
   generalTags: Tags
   characterTags: Tags
+  history: boolean
 }
 
 export const Config: Schema<Config> = Schema.object({
@@ -61,8 +62,10 @@ export const Config: Schema<Config> = Schema.object({
     .role("")
     .description("选择模型"),
   generalTags: GeneralTags,
-  characterTags: CharacterTags
-  
+  characterTags: CharacterTags,
+  history: Schema.boolean()
+    .default(false)
+    .description("是否将识别历史储存至数据库")
 })
 
 declare module 'koishi' {
@@ -157,12 +160,16 @@ export function apply(ctx: Context, config: Config) {
         result += `\n${rating.label} (${Math.trunc(rating.confidence * 100)}%)`
       }
 
-      const {id} = await ctx.database.create("taggerData", {
-        userId: session.userId,
-        content: `识别图片：${h.image(url)}\n\n` + result
-      })
+      let id: number
+      if (config.history) {
+        const {id} = await ctx.database.create("taggerData", {
+          userId: session.userId,
+          content: `识别图片：${h.image(url)}\n\n` + result
+        })
+      }
+      
 
-      return h.quote(session?.quote?.id ?? session.messageId) + result + `\n\n储存编号：${id}`
+      return h.quote(session?.quote?.id ?? session.messageId) + result + (id ? `\n\n储存编号：${id} ` : "")
     })
 
     ctx.command("tagger.view-results <id:posint>", "查看过往的识别结果")
