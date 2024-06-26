@@ -162,10 +162,10 @@ export function apply(ctx: Context, config: Config) {
 
       let id: number
       if (config.history) {
-        const {id} = await ctx.database.create("taggerData", {
+        id = (await ctx.database.create("taggerData", {
           userId: session.userId,
           content: `识别图片：${h.image(url)}\n\n` + result
-        })
+        })).id
       }
       
 
