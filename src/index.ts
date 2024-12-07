@@ -122,7 +122,7 @@ export function apply(ctx: Context, config: Config) {
       uploadFormData.append('files', await ctx.http.get(url, {responseType: 'blob'}))
       const hash = Date.now()
 
-      const path = (await ctx.http.post(`https://smilingwolf-wd-tagger.hf.space/upload?upload_id=${hash}`, uploadFormData))[0]
+      const path = (await ctx.http.post(`https://smilingwolf-wd-tagger.hf.space/gradio_api/upload?upload_id=${hash}`, uploadFormData))[0]
 
       let body = {
         "data": [
@@ -143,9 +143,9 @@ export function apply(ctx: Context, config: Config) {
         "session_hash": String(hash),
       }
 
-      await ctx.http.post("https://smilingwolf-wd-tagger.hf.space/queue/join", body)
+      await ctx.http.post("https://smilingwolf-wd-tagger.hf.space/gradio_api/queue/join", body)
 
-      const res = await ctx.http.get(`https://smilingwolf-wd-tagger.hf.space/queue/data?session_hash=${hash}`)
+      const res = await ctx.http.get(`https://smilingwolf-wd-tagger.hf.space/gradio_api/queue/data?session_hash=${hash}`)
       let data = JSON.parse(res.split("\n")[4].slice(5, res.split("\n")[4].length)).output.data
       
       let result =  `标签：\n${data[0]}\n\n角色：${data[2].label ?? "未知"}`
